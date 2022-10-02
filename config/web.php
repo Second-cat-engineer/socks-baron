@@ -1,5 +1,7 @@
 <?php
 
+use yii\web\ErrorHandler;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -15,6 +17,12 @@ $config = [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'w_mnqAzFeElhmYvxLTrz3jXAgun8qfcr',
+            'parsers' => [
+                'application/json' => \yii\web\JsonParser::class,
+            ],
+        ],
+        'response' => [
+            'format' => 'json',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -24,13 +32,7 @@ $config = [
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
-        'mailer' => [
-            'class' => \yii\symfonymailer\Mailer::class,
-            'viewPath' => '@app/mail',
-            // send all mails to a file by default.
-            'useFileTransport' => true,
+            'class' => ErrorHandler::class
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -42,14 +44,24 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => [
+                        'api/socks',
+                    ],
+                    'pluralize' => false
+                ],
             ],
         ],
-        */
+    ],
+    'modules' => [
+        'api' => [
+            'class' => \app\modules\api\ModuleApi::class
+        ]
     ],
     'params' => $params,
 ];
